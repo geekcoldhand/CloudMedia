@@ -1,18 +1,18 @@
 import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
+import { s3, iam } from "@pulumi/aws"; 
 
-const bucket = new aws.s3.BucketV2("temp-image-bucket", {
+const bucket = new s3.BucketV2("image-file-upload", {
     forceDestroy: true, 
 });
 
-const ownershipControls = new aws.s3.BucketOwnershipControls("bucket-ownership-controls", {
+const configureOwnershipControls = new s3.BucketOwnershipControls("bucket-ownership-controls", {
     bucket: bucket.id,
     rule: {
         objectOwnership: "BucketOwnerPreferred",
     },
 });
 
-const publicAccessBlock = new aws.s3.BucketPublicAccessBlock("bucket-public-access-block", {
+const configurePublicAccessBlock = new s3.BucketPublicAccessBlock("bucket-public-access-block", {
     bucket: bucket.id,
     blockPublicAcls: true,
     blockPublicPolicy: true,
@@ -20,7 +20,7 @@ const publicAccessBlock = new aws.s3.BucketPublicAccessBlock("bucket-public-acce
     restrictPublicBuckets: true,
 });
 
-const bucketCors = new aws.s3.BucketCorsConfigurationV2("bucket-cors", {
+const configureBucketCors = new s3.BucketCorsConfigurationV2("bucket-cors", {
     bucket: bucket.id,
     corsRules: [{
         allowedHeaders: ["*"],
@@ -32,19 +32,19 @@ const bucketCors = new aws.s3.BucketCorsConfigurationV2("bucket-cors", {
 });
 
 
-const lifecycleConfig = new aws.s3.BucketLifecycleConfigurationV2("bucket-lifecycle", {
+const configureLifecycle = new s3.BucketLifecycleConfigurationV2("bucket-lifecycle", {
     bucket: bucket.id,
     rules: [{
         id: "delete-after-1-day",
         status: "Enabled",
         expiration: {
-            days: 1, // Minimum value allowed by S3
+            days: 1, 
         },
     }],
 });
 
 
-const lambdaRole = new aws.iam.Role("lambda-role", {
+const createlambdaRole = new iam.Role("lambda-role", {
     assumeRolePolicy: JSON.stringify({
         Version: "2012-10-17",
         Statement: [{
@@ -58,8 +58,8 @@ const lambdaRole = new aws.iam.Role("lambda-role", {
 });
 
 
-const lambdaS3Policy = new aws.iam.RolePolicy("lambda-s3-policy", {
-    role: lambdaRole.id,
+const attachS3BucketToLambda = new iam.RolePolicy("lambda-s3-policy", {
+    role: createlambdaRole.id,
     policy: bucket.arn.apply(arn => JSON.stringify({
         Version: "2012-10-17",
         Statement: [{
@@ -87,4 +87,4 @@ const lambdaS3Policy = new aws.iam.RolePolicy("lambda-s3-policy", {
 
 export const bucketName = bucket.id;
 export const bucketUrl = pulumi.interpolate`https://${bucket.bucketRegionalDomainName}`;
-export const lambdaRoleArn = lambdaRole.arn;
+export const lambdaRoleArn = createlambdaRole.arn;
