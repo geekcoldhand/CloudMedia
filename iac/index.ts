@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { s3, iam } from "@pulumi/aws"; 
 
 const bucket = new s3.BucketV2("image-file-upload", {
+    bucket: process.env.S3_BUCKET_NAME,
     forceDestroy: true, 
 });
 
@@ -70,7 +71,7 @@ const attachS3BucketToLambda = new iam.RolePolicy("lambda-s3-policy", {
             ],
             Effect: "Allow",
             Resource: [
-                `${arn}/*`, //dynamic bucket ARN
+                `${arn}/*`, //ARN
             ]
         }, {
             Action: [

@@ -6,10 +6,14 @@
 
 We are excited to announce *Ephemeral Image Uploader*, a lightweight, serverless image upload demo built with AWS and modern frontend technologies. Designed for developers looking to get hands-on with Vercel, S3, Lambda, Pulumi, and Next.js, this project is perfect for learning cloud architecture without incurring costs or persisting data.
 
+### 🔗 Live Demo  
+[cloud-media-git-main-geekcoldhands-projects.vercel.app](https://cloud-media-git-main-geekcoldhands-projects.vercel.app)
+
 ---
 
 ## 📌 Audience
 
+link []
 - **Primary:** Early to mid-level web developers looking to gain hands-on experience with modern cloud tools and frontend frameworks.
 - **Secondary:** DevOps and platform engineering learners interested in Infrastructure as Code (IaC), AWS, and serverless design patterns.
 - **Tertiary:** Recruiters or hiring managers reviewing a portfolio project that demonstrates

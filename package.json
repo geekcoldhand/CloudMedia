@@ -1,10 +1,11 @@
 {
-  "devDependencies": {
-    "@types/node": "^22.14.0"
-  },
-  "dependencies": {
-    "-": "^0.0.1",
-    "g": "^2.0.1",
-    "vercel": "^41.6.0"
-  }
+	"devDependencies": {
+		"@types/node": "^22.14.0"
+	},
+	"dependencies": {
+		"-": "^0.0.1",
+		"g": "^2.0.1",
+		"tailwindcss": "^3.4.1",
+		"vercel": "^41.6.0"
+	}
 }
