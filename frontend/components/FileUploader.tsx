@@ -16,28 +16,69 @@ export function FileUploader() {
   const [uploadComplete, setUploadComplete] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Only image files are allowed.");
+      return;
+    }
+  
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File must be under 10MB.");
+      return;
+    }
+  
+    const uploadUrlResponse = await fetch("/api/getUploadUrl", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+    });
+  
+    const { uploadUrl, key } = await uploadUrlResponse.json();
+  
+    try {
+      
+   
+    const uploadS3Response = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    });
+    console.log(`Uploaded key:, ${key} to S3 and response:`, uploadS3Response);
+    } catch (error) {
+      alert("Error uploading file to S3.");
+      console.error("Error uploading file to S3:", error);
+    }
+  };
+  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0]
-      setFile(selectedFile)
-      setPreview(URL.createObjectURL(selectedFile))
-      setUploadComplete(false)
-      setProgress(0)
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+      setUploadComplete(false);
+      setProgress(0);
+
+      handleFileUpload(selectedFile);
     }
   }
 
   const simulateUpload = () => {
     if (!file) return
 
-    setUploading(true)
-    setProgress(0)
+    setUploading(true);
+    setProgress(0);
 
     const interval = setInterval(() => {
       setProgress((prevProgress) => {
         if (prevProgress >= 100) {
-          clearInterval(interval)
-          setUploading(false)
-          setUploadComplete(true)
+          clearInterval(interval);
+          setUploading(false);
+          setUploadComplete(true);
           return 100
         }
         return prevProgress + 5
@@ -46,11 +87,11 @@ export function FileUploader() {
   }
 
   const resetUpload = () => {
-    setFile(null)
-    setPreview(null)
-    setProgress(0)
-    setUploading(false)
-    setUploadComplete(false)
+    setFile(null);
+    setPreview(null);
+    setProgress(0);
+    setUploading(false);
+    setUploadComplete(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
@@ -58,12 +99,12 @@ export function FileUploader() {
 
   const downloadImage = () => {
     if (preview) {
-      const a = document.createElement("a")
+      const a = document.createElement("a");
       a.href = preview
       a.download = file?.name || "downloaded-image"
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   }
 
